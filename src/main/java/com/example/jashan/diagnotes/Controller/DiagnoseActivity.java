@@ -54,11 +54,13 @@ public class DiagnoseActivity extends AppCompatActivity {
 
             try {
                 mNameView.setText(patientInfo.getString("name"));
-                mPhoneView.setText("Tel: " + patientInfo.getString("phone"));
+                mPhoneView.setText(String.format("Tel: %s", patientInfo.getString("phone")));
                 mMetaView.setText(patientInfo.getInt("age") + ", " + patientInfo.getString("sex"));
                 mSymptomView.setText(patientInfo.getJSONObject("diagnosis").getString("disease"));
                 mProbabilityView.setText(String.format("%s%%",
                         patientInfo.getJSONObject("diagnosis").getDouble("probability") * 100));
+
+                mDescriptionView.setText(String.format("For more information, see: \n%s", patientInfo.getString("url")));
 
                 final JSONObject finalPatientInfo = patientInfo;
                 mCallButton.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +78,22 @@ public class DiagnoseActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                    }
+                });
+
+                mSmsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intentt = new Intent(Intent.ACTION_VIEW);
+                        intentt.setData(Uri.parse("sms:"));
+                        intentt.setType("vnd.android-dir/mms-sms");
+                        intentt.putExtra(Intent.EXTRA_TEXT, "");
+                        try {
+                            intentt.putExtra("address", finalPatientInfo.getString("phone"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        startActivityForResult(Intent.createChooser(intentt, ""), 0);
                     }
                 });
 

@@ -12,6 +12,8 @@ import com.example.jashan.diagnotes.Controller.DiagnoseActivity;
 import com.example.jashan.diagnotes.R;
 
 import org.apache.commons.lang3.text.WordUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -40,7 +42,11 @@ public class DiagnosisAdapter extends RecyclerView.Adapter<DiagnosisAdapter.View
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final Diagnosis item = mDiagnoses.get(position);
-        holder.diagnosisTitleView.setText(WordUtils.capitalize(item.getDiagnosisTitle()));
+        try {
+            holder.diagnosisTitleView.setText(new JSONObject(item.getJsonData()).getString("name"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         holder.diagnosisProbabilityView.setText(String.format("Probability: %s%%",
                 Math.round(item.getProbability() * 100000) / 1000));
         holder.patientTelephoneView.setText(item.getContactNumber());
